@@ -7,7 +7,7 @@ document.getElementById('refreshFavorites').addEventListener('click', refreshFav
  */
 function searchBtn() {
   var xhr = new XMLHttpRequest();
-  var uri = encodeURI('http://www.omdbapi.com/?S='+ document.getElementById('searchValue').value + '&y=&plot=short&r=json')
+  var uri = encodeURI('//www.omdbapi.com/?S='+ document.getElementById('searchValue').value + '&y=&plot=short&r=json')
 
   xhr.open('GET', uri, true);
   xhr.onreadystatechange = function() {
@@ -61,7 +61,7 @@ function searchBtnSuccess(jsonRes) {
  */
 function clickDetail() {
   var xhr = new XMLHttpRequest();
-  var uri = encodeURI('http://www.omdbapi.com/?i='+ this.attributes['data-imdbid'].value + '&y=&plot=long&r=json')
+  var uri = encodeURI('//www.omdbapi.com/?i='+ this.attributes['data-imdbid'].value + '&y=&plot=long&r=json')
 
   xhr.open('GET', uri, true);
   xhr.onreadystatechange = function() {
