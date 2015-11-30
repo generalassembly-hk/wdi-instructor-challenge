@@ -1,0 +1,7 @@
+.form-group .form-control {
+  width: 400px;
+}
+
+.glyphicon, .table-striped a {
+  cursor: pointer;
+}

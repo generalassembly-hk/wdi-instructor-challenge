@@ -1,0 +1,54 @@
+!!!
+%html
+  %head
+    %title WDI Instructor Code Challenge
+    %link{ rel: "stylesheet", href: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", crossorigin: "anonymous" }
+    %link{ rel: "stylesheet", href: "css/omdb.css" }
+
+  %body
+    .container
+      .row
+        .col-sm-8
+          .row
+            %form.navbar-form.col-sm-12
+              .form-group
+                %input.form-control#searchValue{ type: "text", placeholder: "Search a Title" }
+              %button.btn#searchBtn{ type: "button" } Search
+
+          .row
+            %h1.col-sm-12 Search Result
+            #searchRes.table-responsive.col-sm-12
+              %table.table.table-striped
+                %thead
+                  %tr
+                    %th Type
+                    %th Year
+                    %th Title
+                    %th
+                %tbody
+                  %tr
+                    %td.text-center{ colspan: 4 } No Result
+
+        .col-sm-4
+          .row
+            %form.navbar-form.col-sm-12
+              %button.btn#refreshFavorites{ type: "button" } Display Favorites
+          .row
+            #favorites.hidden
+              %h1 Favorites
+
+              .table-responsive
+                %table.table.table-striped
+                  %thead
+                    %tr
+                      %th Title
+                      %th
+                  %tbody
+
+      .row
+        .col-sm-12
+          .panel.panel-default.hidden
+            .panel-heading
+            .panel-body
+
+    %script{ src: '/javascript/omdb.js', type: 'text/javascript' }

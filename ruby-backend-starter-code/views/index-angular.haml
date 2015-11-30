@@ -1,0 +1,85 @@
+!!!
+%html
+  %head
+    %title WDI Instructor Code Challenge
+    %link{ rel: "stylesheet", href: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", crossorigin: "anonymous" }
+    %link{ rel: "stylesheet", href: "css/omdb.css" }
+    %script{ src: "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"}
+    %script{ src: "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-resource.min.js"}
+    %script{ src: "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"}
+
+  %body{ "ng-app" => "omdbApp" }
+    .container{ "ng-controller" => "OmdbController as omdb"}
+      .row
+        .col-sm-8
+          .row
+            %form.navbar-form.col-sm-12
+              .form-group
+                %input.form-control{ type: "text", placeholder: "Search a Title", 'ng-model' => 'omdb.searchQuery' }
+              %button.btn{ type: "button", 'ng-click' => 'omdb.search()' } Search
+              %label
+          .row
+            %h1.col-sm-12 Search Result
+
+            .table-responsive.col-sm-12
+              %table.table.table-striped
+                %thead
+                  %tr
+                    %th Type
+                    %th Year
+                    %th Title
+                    %th
+                %tbody
+                  %tr{ 'ng-repeat' => "result in omdb.searchResult" }
+                    %td {{ result.Type }}
+                    %td {{ result.Year }}
+                    %td
+                      %a{ 'ng-click' => 'omdb.detail(result.imdbID)' } {{ result.Title }}
+                    %td
+                      %span.glyphicon.glyphicon-star.favorite{ 'ng-click' => 'omdb.addToFavorite(result)', 'aria-hidden' => "true" }
+                  %tr{ 'ng-if' => 'omdb.searchResult.length == 0'}
+                    %td.text-center{ colspan: 4 } No Result
+
+        .col-sm-4
+          .row
+            %form.navbar-form.col-sm-12
+              %button.btn{ type: "button", 'ng-click' => 'omdb.displayFavorites()' } Display Favorites
+          .row
+            #favorites.hidden
+              %h1 Favorites
+
+              .table-responsive
+                %table.table.table-striped
+                  %thead
+                    %tr
+                      %th Title
+                      %th
+                  %tbody
+                    %tr{ 'ng-repeat' => "result in omdb.favorites" }
+                      %td
+                        %a{ 'ng-click' => 'omdb.detail(result.oid)' } {{ result.name }}
+                      %td
+                    %tr{ 'ng-if' => 'omdb.favorites.length == 0'}
+                      %td.text-center{ colspan: 2 } No Result
+
+
+      .row
+        .col-sm-12
+          .panel.panel-default{ 'ng-hide' => 'omdb.selectedRes.Title === undefined' }
+            .panel-heading {{ omdb.selectedRes.Title }}
+            .panel-body
+              %ul.list-group
+                %li.list-group-item
+                  %strong Released:
+                  {{ omdb.selectedRes.Released }}
+                %li.list-group-item
+                  %strong Genre:
+                  {{ omdb.selectedRes.Genre }}
+                %li.list-group-item
+                  %strong Plot:
+                  {{ omdb.selectedRes.Plot }}
+                %li.list-group-item
+                  %strong Actors:
+                  {{ omdb.selectedRes.Actors }}
+
+    %script{ src: '/javascript/omdbapp.js', type: 'text/javascript' }

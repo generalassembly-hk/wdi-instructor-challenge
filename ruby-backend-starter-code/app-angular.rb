@@ -6,10 +6,6 @@ set :port, 3000
 set :bind, '0.0.0.0'
 
 get '/' do
-  haml :index
-end
-
-get '/index-angular' do
   haml :'index-angular'
 end
 
