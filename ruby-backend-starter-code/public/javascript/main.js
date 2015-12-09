@@ -11,7 +11,41 @@ OMDb.Templates = {
   }
 }
 
+OMDb.EventListeners = {
+  clickSearchButton: function() {
+    document.getElementById('search').addEventListener('click', function(e) {
+      e.preventDefault();
+      OMDb.HTTPClient.searchForMovies().then(function(movies) {
+        OMDb.TemplatesRenderer.renderMovies(movies);
+      });
+    });
+  }
+}
+
 OMDb.TemplatesRenderer = {
+  renderHome: function() {
+    var appContainer = document.getElementById('app-container');
+    appContainer.innerHTML = `
+      <h1>Find Your Movies!</h1>
+      <form class="form-inline">
+        <input class="form-control" id="query" type='text' placeholder='How about Rocky?'></input>
+        <button class="btn btn-primary" id="search">Search</button>
+      </form>
+      <table class="table" id="search-results">
+        <thead>
+          <tr>
+            <th>Poster</th>
+            <th>Title</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody id="search-results-body"></tbody>
+      </table>
+    `;
+
+    OMDb.EventListeners.clickSearchButton();
+  },
+
   renderMovie: function(imdbID) {
     OMDb.HTTPClient.getMovieByIMDbId(imdbID).then(function(movie) {
       var appContainer       = document.getElementById('app-container');
@@ -70,31 +104,36 @@ OMDb.HTTPClient = {
 
   searchForMovies: function() {
     var query = document.getElementById('query').value;
+    return new Promise(function(resolve, reject) {
+      if (query.length > 0) {
+        // NOTE: XMLHttpRequest is an API that allows
+        // transferring data between a client and a server
+        // without disrupting what the user is doing.
+        // It is used in AJAX programming.
+        var queryRequest = new XMLHttpRequest();
+        var url = 'http://www.omdbapi.com/?s=' + query;
 
-    if (query.length > 0) {
-      // NOTE: XMLHttpRequest is an API that allows
-      // transferring data between a client and a server
-      // without disrupting what the user is doing.
-      // It is used in AJAX programming.
-      var queryRequest = new XMLHttpRequest();
-      var url = 'http://www.omdbapi.com/?s=' + query;
-
-      queryRequest.onreadystatechange = function() {
-        if (queryRequest.readyState == 4 && queryRequest.status == 200) {
-          var responseJson = JSON.parse(queryRequest.responseText);
-          OMDb.TemplatesRenderer.renderMovies(responseJson.Search);
+        queryRequest.onreadystatechange = function() {
+          if (queryRequest.readyState == 4 && queryRequest.status == 200) {
+            var responseJson = JSON.parse(queryRequest.responseText);
+            resolve(responseJson.Search);
+          }
         }
+        queryRequest.open('GET', url, true);
+        queryRequest.send();
+      } else {
+        reject('Query string cannot be empty');
       }
-      queryRequest.open('GET', url, true);
-      queryRequest.send();
-    }
+    });
   }
 }
 
 OMDb.router = {
   route: function() {
     var hashValue = window.location.hash;
-    if (hashValue.match(/movies\/tt\d+/) != null) {
+    if (hashValue == '') {
+      OMDb.TemplatesRenderer.renderHome();
+    } else if (hashValue.match(/movies\/tt\d+/) != null) {
       var imdbID = window.location.hash.match(/tt\d+/)[0];
       OMDb.TemplatesRenderer.renderMovie(imdbID);
     }
@@ -104,12 +143,6 @@ OMDb.router = {
 // NOTE: this event is fired when the initial HTML document has been
 // completely loaded and parsed
 document.addEventListener('DOMContentLoaded', function() {
-
-  document.getElementById('search').addEventListener('click', function(e) {
-    e.preventDefault();
-    OMDb.HTTPClient.searchForMovies();
-  });
-
+  OMDb.router.route();
   window.addEventListener('hashchange', OMDb.router.route, false);
-
 });
