@@ -1,13 +1,80 @@
 window.OMDb = {};
 
 OMDb.Templates = {
+  moviePoster: function(movie) {
+    return `<img src=${movie.Poster} alt="Poster Unavailable" />`;
+  },
+
+  movieDetails: function(movie) {
+    return `
+      <p>Rated: ${movie.Rated}</p>
+      <p>Released: ${movie.Released}</p>
+      <p>Runtime: ${movie.Runtime}</p>
+      <p>Genre: ${movie.Genre}</p>
+      <p>Director: ${movie.Director}</p>
+      <p>Writer: ${movie.Writer}</p>
+      <p>Actors: ${movie.Actors}</p>
+      <p>Plot: ${movie.Plot}</p>
+      <p>Language: ${movie.Language}</p>
+      <p>Country: ${movie.Country}</p>
+      <p>Awards: ${movie.Awards}</p>
+      <p>Metascore: ${movie.Metascore}</p>
+      <p>imdbRating: ${movie.imdbRating}</p>
+      <p>imdbVotes: ${movie.imdbVotes}</p>
+    `;
+  },
+
   movieRow: function(movie) {
-    var row = '<tr>';
-    row += `<td><img src=${movie.Poster} alt="Poster Unavailable" /></td>`;
-    row += `<td><a href="#movies/${movie.imdbID}">${movie.Title}</a></td>`;
-    row += `<td>${movie.Year}</td>`;
-    row += '</tr>';
-    return row;
+    return `
+      <tr>
+        <td>${OMDb.Templates.moviePoster(movie)}</td>
+        <td><a href="#movies/${movie.imdbID}">${movie.Title}</a></td>
+        <td>${movie.Year}</td>
+      </tr>
+    `
+  },
+
+  moviesTable: function() {
+    return `
+      <table class="table" id="search-results">
+        <thead>
+          <tr>
+            <th>Poster</th>
+            <th>Title</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody id="search-results-body"></tbody>
+      </table>
+    `;
+  },
+
+  searchForm: function() {
+    return `
+      ${OMDb.Templates.myFavorites()}
+      <h1>Find Your Movies!</h1>
+      <form class="form-inline">
+        <input class="form-control" id="query" type='text' placeholder='How about Rocky?'></input>
+        <button class="btn btn-primary" id="search">Search</button>
+      </form>
+      ${OMDb.Templates.moviesTable()}
+    `;
+  },
+
+  myFavorites: function() {
+    return '<a class="pull-right" href="#my-favorites">My Favorites</a>';
+  },
+
+  back: function() {
+    return '<a href="/">Back</a>';
+  },
+
+  favoriteButton: function() {
+    return `
+      <button type="button" id="favorite" class="btn btn-primary btn-lg">
+        <span class="glyphicon glyphicon-star" aria-hidden="true"></span> Favorite
+      </button>
+    `;
   }
 }
 
@@ -32,61 +99,44 @@ OMDb.EventListeners = {
 }
 
 OMDb.TemplatesRenderer = {
-  renderHome: function() {
-    var appContainer = document.getElementById('app-container');
-    appContainer.innerHTML = `
-      <h1>Find Your Movies!</h1>
-      <form class="form-inline">
-        <input class="form-control" id="query" type='text' placeholder='How about Rocky?'></input>
-        <button class="btn btn-primary" id="search">Search</button>
-      </form>
-      <table class="table" id="search-results">
-        <thead>
-          <tr>
-            <th>Poster</th>
-            <th>Title</th>
-            <th>Year</th>
-          </tr>
-        </thead>
-        <tbody id="search-results-body"></tbody>
-      </table>
-    `;
+  _appContainer: function() {
+    return document.getElementById('app-container');
+  },
 
+  renderMyFavorites: function() {
+    var appContainer       = OMDb.TemplatesRenderer._appContainer();
+    appContainer.innerHTML = `
+      ${OMDb.Templates.back()}
+      ${OMDb.Templates.moviesTable()}
+    `
+
+    OMDb.HTTPClient.getMyFavorites().then(function(movies) {
+      OMDb.TemplatesRenderer.renderMovies(movies);
+    });
+  },
+
+  renderHome: function() {
+    var appContainer       = OMDb.TemplatesRenderer._appContainer();
+    appContainer.innerHTML = OMDb.Templates.searchForm();
     OMDb.EventListeners.clickSearchButton();
   },
 
   renderMovie: function(imdbID) {
     OMDb.HTTPClient.getMovieByIMDbId(imdbID).then(function(movie) {
-      var appContainer       = document.getElementById('app-container');
-      appContainer.innerHTML = '<a href="/">Back</a>';
-
-      appContainer.innerHTML += `<h1>${movie.Title} (${movie.Year})</h1>`;
+      var appContainer = OMDb.TemplatesRenderer._appContainer();
       // TODO: Currently if we reload the page the favorite button will be
       // visible and clicking on it will create duplicate entries in the file.
       // It should not be visible (or show a 'unlike' button) if the user has
       // already liked the movie.
-      appContainer.innerHTML += `
-        <button type="button" id="favorite" class="btn btn-primary btn-lg">
-          <span class="glyphicon glyphicon-star" aria-hidden="true"></span> Favorite
-        </button>
+      appContainer.innerHTML = `
+        ${OMDb.Templates.back()}
+        ${OMDb.Templates.myFavorites()}
+        <h1>${movie.Title} (${movie.Year})</h1>
+        ${OMDb.Templates.favoriteButton()}
+        <br />
+        ${OMDb.Templates.moviePoster(movie)}
+        ${OMDb.Templates.movieDetails(movie)}
       `;
-      appContainer.innerHTML += '<br />';
-      appContainer.innerHTML += `<img src=${movie.Poster} alt="Poster Unavailable" />`;
-      // TODO: refactor
-      appContainer.innerHTML += `<p>Rated: ${movie.Rated}</p>`;
-      appContainer.innerHTML += `<p>Released: ${movie.Released}</p>`;
-      appContainer.innerHTML += `<p>Runtime: ${movie.Runtime}</p>`;
-      appContainer.innerHTML += `<p>Genre: ${movie.Genre}</p>`;
-      appContainer.innerHTML += `<p>Director: ${movie.Director}</p>`;
-      appContainer.innerHTML += `<p>Writer: ${movie.Writer}</p>`;
-      appContainer.innerHTML += `<p>Actors: ${movie.Actors}</p>`;
-      appContainer.innerHTML += `<p>Plot: ${movie.Plot}</p>`;
-      appContainer.innerHTML += `<p>Language: ${movie.Language}</p>`;
-      appContainer.innerHTML += `<p>Country: ${movie.Country}</p>`;
-      appContainer.innerHTML += `<p>Awards: ${movie.Awards}</p>`;
-      appContainer.innerHTML += `<p>Metascore: ${movie.Metascore}</p>`;
-      appContainer.innerHTML += `<p>imdbRating: ${movie.imdbRating}</p>`;
-      appContainer.innerHTML += `<p>imdbVotes: ${movie.imdbVotes}</p>`;
 
       OMDb.EventListeners.clickFavoriteButton(movie.Title, movie.imdbID);
     });
@@ -103,6 +153,33 @@ OMDb.TemplatesRenderer = {
 }
 
 OMDb.HTTPClient = {
+  // NOTE: XMLHttpRequest is an API that allows
+  // transferring data between a client and a server
+  // without disrupting what the user is doing.
+  // It is used in AJAX programming.
+  getMyFavorites: function() {
+    return new Promise(function(resolve, reject) {
+      var queryRequest = new XMLHttpRequest();
+      var url = '/favorites';
+
+      queryRequest.onreadystatechange = function() {
+        if (queryRequest.readyState == 4 && queryRequest.status == 200) {
+          var movies = JSON.parse(queryRequest.responseText);
+          var moviesPromise = movies.map(function(movie) {
+            return OMDb.HTTPClient.getMovieByIMDbId(movie.oid);
+          });
+          Promise.all(moviesPromise).then(function(movies) {
+            resolve(movies);
+          });
+        }
+        // TODO: we need to reject this promise if it doesn't return 200
+      }
+
+      queryRequest.open('GET', url, true);
+      queryRequest.send();
+    });
+  },
+
   likeMovie: function(name, oid) {
     return new Promise(function(resolve, reject) {
       var postRequest = new XMLHttpRequest();
@@ -118,7 +195,6 @@ OMDb.HTTPClient = {
 
       postRequest.open('POST', url, true);
       postRequest.setRequestHeader('Content-type', 'application/json');
-      // postRequest.send(`name=${name}&oid=${oid}`);
       postRequest.send(JSON.stringify({ name: name, oid: oid }));
     });
   },
@@ -147,17 +223,16 @@ OMDb.HTTPClient = {
     var query = document.getElementById('query').value;
     return new Promise(function(resolve, reject) {
       if (query.length > 0) {
-        // NOTE: XMLHttpRequest is an API that allows
-        // transferring data between a client and a server
-        // without disrupting what the user is doing.
-        // It is used in AJAX programming.
         var queryRequest = new XMLHttpRequest();
         var url = `http://www.omdbapi.com/?s=${query}`;
 
         queryRequest.onreadystatechange = function() {
           if (queryRequest.readyState == 4 && queryRequest.status == 200) {
             var responseJson = JSON.parse(queryRequest.responseText);
-            resolve(responseJson.Search);
+            var movies       = responseJson.Search.filter(function(result) {
+              return result.Type == 'movie';
+            });
+            resolve(movies);
           }
         }
         queryRequest.open('GET', url, true);
@@ -177,6 +252,8 @@ OMDb.router = {
     } else if (hashValue.match(/movies\/tt\d+/) != null) {
       var imdbID = window.location.hash.match(/tt\d+/)[0];
       OMDb.TemplatesRenderer.renderMovie(imdbID);
+    } else if (hashValue.match(/my-favorites/) != null) {
+      OMDb.TemplatesRenderer.renderMyFavorites();
     }
   }
 }
