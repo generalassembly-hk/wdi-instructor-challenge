@@ -3,9 +3,9 @@ window.OMDb = {};
 OMDb.Templates = {
   movieRow: function(movie) {
     var row = '<tr>';
-    row += '<td><img src="' + movie.Poster + '" alt="Poster Unavailable" /></td>';
-    row += '<td><a href="#movies/' + movie.imdbID + '">' + movie.Title + '</a></td>';
-    row += '<td>' + movie.Year + '</td>';
+    row += `<td><img src=${movie.Poster} alt="Poster Unavailable" /></td>`;
+    row += `<td><a href="#movies/${movie.imdbID}">${movie.Title}</a></td>`;
+    row += `<td>${movie.Year}</td>`;
     row += '</tr>';
     return row;
   }
@@ -51,23 +51,23 @@ OMDb.TemplatesRenderer = {
       var appContainer       = document.getElementById('app-container');
       appContainer.innerHTML = '<a href="/">Back</a>';
 
-      appContainer.innerHTML += '<h1>' + movie.Title + ' (' + movie.Year + ')</h1>';
-      appContainer.innerHTML += '<img src="' + movie.Poster + '" alt="Poster Unavailable" />';
+      appContainer.innerHTML += `<h1>${movie.Title} (${movie.Year})</h1>`;
+      appContainer.innerHTML += `<img src=${movie.Poster} alt="Poster Unavailable" />`;
       // TODO: refactor
-      appContainer.innerHTML += '<p>Rated: ' + movie.Rated + '</p>';
-      appContainer.innerHTML += '<p>Released: ' + movie.Released + '</p>';
-      appContainer.innerHTML += '<p>Runtime: ' + movie.Runtime + '</p>';
-      appContainer.innerHTML += '<p>Genre: ' + movie.Genre + '</p>';
-      appContainer.innerHTML += '<p>Director: ' + movie.Director + '</p>';
-      appContainer.innerHTML += '<p>Writer: ' + movie.Writer + '</p>';
-      appContainer.innerHTML += '<p>Actors: ' + movie.Actors + '</p>';
-      appContainer.innerHTML += '<p>Plot: ' + movie.Plot + '</p>';
-      appContainer.innerHTML += '<p>Language: ' + movie.Language + '</p>';
-      appContainer.innerHTML += '<p>Country: ' + movie.Country + '</p>';
-      appContainer.innerHTML += '<p>Awards: ' + movie.Awards + '</p>';
-      appContainer.innerHTML += '<p>Metascore: ' + movie.Metascore + '</p>';
-      appContainer.innerHTML += '<p>imdbRating: ' + movie.imdbRating + '</p>';
-      appContainer.innerHTML += '<p>imdbVotes: ' + movie.imdbVotes + '</p>';
+      appContainer.innerHTML += `<p>Rated: ${movie.Rated}</p>`;
+      appContainer.innerHTML += `<p>Released: ${movie.Released}</p>`;
+      appContainer.innerHTML += `<p>Runtime: ${movie.Runtime}</p>`;
+      appContainer.innerHTML += `<p>Genre: ${movie.Genre}</p>`;
+      appContainer.innerHTML += `<p>Director: ${movie.Director}</p>`;
+      appContainer.innerHTML += `<p>Writer: ${movie.Writer}</p>`;
+      appContainer.innerHTML += `<p>Actors: ${movie.Actors}</p>`;
+      appContainer.innerHTML += `<p>Plot: ${movie.Plot}</p>`;
+      appContainer.innerHTML += `<p>Language: ${movie.Language}</p>`;
+      appContainer.innerHTML += `<p>Country: ${movie.Country}</p>`;
+      appContainer.innerHTML += `<p>Awards: ${movie.Awards}</p>`;
+      appContainer.innerHTML += `<p>Metascore: ${movie.Metascore}</p>`;
+      appContainer.innerHTML += `<p>imdbRating: ${movie.imdbRating}</p>`;
+      appContainer.innerHTML += `<p>imdbVotes: ${movie.imdbVotes}</p>`;
     });
   },
 
@@ -87,7 +87,7 @@ OMDb.HTTPClient = {
     // but is expected in the future.
     return new Promise(function(resolve, reject) {
       var queryRequest = new XMLHttpRequest();
-      var url = 'http://www.omdbapi.com/?i=' + imdbID;
+      var url = `http://www.omdbapi.com/?i=${imdbID}`;
 
       queryRequest.onreadystatechange = function() {
         if (queryRequest.readyState == 4 && queryRequest.status == 200) {
@@ -111,7 +111,7 @@ OMDb.HTTPClient = {
         // without disrupting what the user is doing.
         // It is used in AJAX programming.
         var queryRequest = new XMLHttpRequest();
-        var url = 'http://www.omdbapi.com/?s=' + query;
+        var url = `http://www.omdbapi.com/?s=${query}`;
 
         queryRequest.onreadystatechange = function() {
           if (queryRequest.readyState == 4 && queryRequest.status == 200) {
