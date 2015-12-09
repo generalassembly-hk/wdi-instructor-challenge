@@ -1,0 +1,27 @@
+!!!
+%html(lang='en')
+  %head
+    %meta(charset='utf-8')
+    %title General Assembly Test
+    %link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' integrity='sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7' crossorigin='anonymous')
+
+  %body
+    .container
+      .jumbotron
+        %h1 Find Your Movies!
+        %form.form-inline
+          %input#query.form-control(type='text' placeholder='How about Rocky?')
+          %button#search.btn.btn-primary Search
+
+        %table#search-results.table
+          %thead
+            %tr
+              %th Poster
+              %th Title
+              %th Year
+          %tbody#search-results-body
+
+  %script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+  %script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js' integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS' crossorigin='anonymous')
+  %script(src='./javascript/main.js')
+
