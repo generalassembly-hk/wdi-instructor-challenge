@@ -176,7 +176,14 @@ OMDb.HTTPClient = {
 
       queryRequest.onreadystatechange = function() {
         if (queryRequest.readyState == 4 && queryRequest.status == 200) {
-          var movies = JSON.parse(queryRequest.responseText);
+          // NOTE: in case it returns an empty string,
+          // set movies to an empty array.
+          try {
+            var movies = JSON.parse(queryRequest.responseText);
+          } catch (e) {
+            var movies = [];
+          }
+
           var moviesPromise = movies.map(function(movie) {
             return OMDb.HTTPClient.getMovieByIMDbId(movie.oid);
           });
