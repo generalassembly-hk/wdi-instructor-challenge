@@ -123,22 +123,34 @@ OMDb.TemplatesRenderer = {
 
   renderMovie: function(imdbID) {
     OMDb.HTTPClient.getMovieByIMDbId(imdbID).then(function(movie) {
-      var appContainer = OMDb.TemplatesRenderer._appContainer();
-      // TODO: Currently if we reload the page the favorite button will be
-      // visible and clicking on it will create duplicate entries in the file.
-      // It should not be visible (or show a 'unlike' button) if the user has
-      // already liked the movie.
-      appContainer.innerHTML = `
-        ${OMDb.Templates.back()}
-        ${OMDb.Templates.myFavorites()}
-        <h1>${movie.Title} (${movie.Year})</h1>
-        ${OMDb.Templates.favoriteButton()}
-        <br />
-        ${OMDb.Templates.moviePoster(movie)}
-        ${OMDb.Templates.movieDetails(movie)}
-      `;
+      OMDb.HTTPClient.getMyFavorites().then(function(favoriteMovies) {
+        var appContainer = OMDb.TemplatesRenderer._appContainer();
+        appContainer.innerHTML = `
+          ${OMDb.Templates.back()}
+          ${OMDb.Templates.myFavorites()}
+          <h1>${movie.Title} (${movie.Year})</h1>
+        `;
 
-      OMDb.EventListeners.clickFavoriteButton(movie.Title, movie.imdbID);
+        var isFavorite = favoriteMovies.some(function(favoriteMovie) {
+          return favoriteMovie.imdbID == movie.imdbID;
+        });
+
+        if (!isFavorite) {
+          appContainer.innerHTML += `${OMDb.Templates.favoriteButton()}<br />`;
+        }
+
+        appContainer.innerHTML += `
+          ${OMDb.Templates.moviePoster(movie)}
+          ${OMDb.Templates.movieDetails(movie)}
+        `;
+
+        // TODO: I am not sure why it doesn't work when I put the event listener
+        // function in the same if statement, maybe it is timing? This is what
+        // works for now.
+        if (!isFavorite) {
+          OMDb.EventListeners.clickFavoriteButton(movie.Title, movie.imdbID);
+        }
+      });
     });
   },
 
