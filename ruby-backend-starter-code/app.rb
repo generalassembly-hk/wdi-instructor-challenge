@@ -31,6 +31,10 @@ helpers do
   end
 end
 
+error 422 do
+  'Unprocessable Entity'
+end
+
 get '/' do
   # NOTE: using haml as our template format
   haml :index, format: :html5
@@ -43,10 +47,18 @@ end
 # NOTE: when we are trying to persist new data in
 # the backend, we should use POST request
 post '/favorites' do
-  return 'Invalid Request' unless params[:name] && params[:oid]
+  request.body.rewind
+  # NOTE: Since this is a POST request,
+  # the data is in the request body,
+  # not in the params
+  request_payload = JSON.parse(request.body.read)
+  return 422 unless request_payload['name'] && request_payload['oid']
 
   favorites = read_data
-  movie     = { name: params[:name], oid: params[:oid] }
+  movie = {
+    name: request_payload['name'],
+    oid:  request_payload['oid']
+  }
 
   favorites << movie
   write_data(favorites)

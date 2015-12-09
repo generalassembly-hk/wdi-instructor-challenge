@@ -19,6 +19,15 @@ OMDb.EventListeners = {
         OMDb.TemplatesRenderer.renderMovies(movies);
       });
     });
+  },
+
+  clickFavoriteButton: function(name, oid) {
+    var favoriteButton = document.getElementById('favorite');
+    favoriteButton.addEventListener('click', function() {
+      OMDb.HTTPClient.likeMovie(name, oid).then(function() {
+        favoriteButton.parentNode.removeChild(favoriteButton);
+      });
+    });
   }
 }
 
@@ -52,6 +61,16 @@ OMDb.TemplatesRenderer = {
       appContainer.innerHTML = '<a href="/">Back</a>';
 
       appContainer.innerHTML += `<h1>${movie.Title} (${movie.Year})</h1>`;
+      // TODO: Currently if we reload the page the favorite button will be
+      // visible and clicking on it will create duplicate entries in the file.
+      // It should not be visible (or show a 'unlike' button) if the user has
+      // already liked the movie.
+      appContainer.innerHTML += `
+        <button type="button" id="favorite" class="btn btn-primary btn-lg">
+          <span class="glyphicon glyphicon-star" aria-hidden="true"></span> Favorite
+        </button>
+      `;
+      appContainer.innerHTML += '<br />';
       appContainer.innerHTML += `<img src=${movie.Poster} alt="Poster Unavailable" />`;
       // TODO: refactor
       appContainer.innerHTML += `<p>Rated: ${movie.Rated}</p>`;
@@ -68,6 +87,8 @@ OMDb.TemplatesRenderer = {
       appContainer.innerHTML += `<p>Metascore: ${movie.Metascore}</p>`;
       appContainer.innerHTML += `<p>imdbRating: ${movie.imdbRating}</p>`;
       appContainer.innerHTML += `<p>imdbVotes: ${movie.imdbVotes}</p>`;
+
+      OMDb.EventListeners.clickFavoriteButton(movie.Title, movie.imdbID);
     });
   },
 
@@ -82,6 +103,26 @@ OMDb.TemplatesRenderer = {
 }
 
 OMDb.HTTPClient = {
+  likeMovie: function(name, oid) {
+    return new Promise(function(resolve, reject) {
+      var postRequest = new XMLHttpRequest();
+      var url = '/favorites';
+
+      postRequest.onreadystatechange = function() {
+        if (postRequest.readyState == 4 && postRequest.status == 200) {
+          var movie = JSON.parse(postRequest.responseText);
+          resolve(movie);
+        }
+        // TODO: we need to reject this promise if it doesn't return 200
+      }
+
+      postRequest.open('POST', url, true);
+      postRequest.setRequestHeader('Content-type', 'application/json');
+      // postRequest.send(`name=${name}&oid=${oid}`);
+      postRequest.send(JSON.stringify({ name: name, oid: oid }));
+    });
+  },
+
   getMovieByIMDbId: function(imdbID) {
     // NOTE: A Promise represents an operation that hasn't completed yet,
     // but is expected in the future.
