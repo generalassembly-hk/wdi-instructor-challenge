@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<title></title>
+		<link rel="stylesheet" href="assets/css/default.css">
+	</head>
+	<body>
+		<view id="index">
+			<h1>Movies</h1>
+			<form id="searchForm">
+				<input id="queryInput" type="text" placeholder="Find a movie&hellip;">
+				<input type="submit" value="Search">
+			</form>
+
+			<div id="searchResults"></div>
+		</view>
+		<view id="movie"></view>
+
+		<script id="entry-tpl" type="text/tpl">
+			<div>
+				<h2><a href="#/movie/{imdbID}">{Title}</a></h2>
+				<p>{Year}</p>
+			</div>
+		</script>
+
+		<script id="movie-tpl" type="text/tpl">
+			<div>
+				<h1>{Title}</h1>
+				<table>
+					<tr>
+						<td>Year</td>
+						<td>{Year}</td>
+					</tr>
+					<tr>
+						<td>Rated</td>
+						<td>{Rated}</td>
+					</tr>
+					<tr>
+						<td>Released</td>
+						<td>{Released}</td>
+					</tr>
+				</table>
+			</div>
+		</script>
+
+		<script src="assets/js/bootstrap.js"></script>
+		<script src="assets/js/lib/templating.js"></script>
+		<script src="assets/js/lib/ajax.js"></script>
+		<script src="assets/js/lib/routing.js"></script>
+		<script src="assets/js/app.js"></script>
+	</body>
+</html>
