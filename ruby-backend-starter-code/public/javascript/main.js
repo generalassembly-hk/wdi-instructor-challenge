@@ -169,6 +169,9 @@ OMDb.HTTPClient = {
   // transferring data between a client and a server
   // without disrupting what the user is doing.
   // It is used in AJAX programming.
+  //
+  // NOTE: A Promise represents an operation that hasn't completed yet,
+  // but is expected in the future.
   getMyFavorites: function() {
     return new Promise(function(resolve, reject) {
       var queryRequest = new XMLHttpRequest();
@@ -219,8 +222,6 @@ OMDb.HTTPClient = {
   },
 
   getMovieByIMDbId: function(imdbID) {
-    // NOTE: A Promise represents an operation that hasn't completed yet,
-    // but is expected in the future.
     return new Promise(function(resolve, reject) {
       var queryRequest = new XMLHttpRequest();
       var url = `http://www.omdbapi.com/?i=${imdbID}`;
