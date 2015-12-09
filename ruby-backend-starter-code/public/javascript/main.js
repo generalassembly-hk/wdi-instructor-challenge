@@ -66,7 +66,7 @@ OMDb.Templates = {
   },
 
   back: function() {
-    return '<a href="/">Back</a>';
+    return '<a href="/#home">Back</a>';
   },
 
   favoriteButton: function() {
@@ -229,7 +229,8 @@ OMDb.HTTPClient = {
         queryRequest.onreadystatechange = function() {
           if (queryRequest.readyState == 4 && queryRequest.status == 200) {
             var responseJson = JSON.parse(queryRequest.responseText);
-            var movies       = responseJson.Search.filter(function(result) {
+            // NOTE: the API also returns other things such as games
+            var movies = responseJson.Search.filter(function(result) {
               return result.Type == 'movie';
             });
             resolve(movies);
@@ -248,11 +249,13 @@ OMDb.router = {
   route: function() {
     var hashValue = window.location.hash;
     if (hashValue == '') {
+      window.location.hash = 'home';
+    } else if (hashValue.match(/home/) != null) {
       OMDb.TemplatesRenderer.renderHome();
     } else if (hashValue.match(/movies\/tt\d+/) != null) {
       var imdbID = window.location.hash.match(/tt\d+/)[0];
       OMDb.TemplatesRenderer.renderMovie(imdbID);
-    } else if (hashValue.match(/my-favorites/) != null) {
+    } else if (hashValue.match(/my\-favorites/) != null) {
       OMDb.TemplatesRenderer.renderMyFavorites();
     }
   }
